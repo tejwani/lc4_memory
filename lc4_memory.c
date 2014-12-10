@@ -32,41 +32,42 @@ Row* add_to_list    (Row* head,
 	newRow -> next = NULL; // initialize to NULL to prevent conditional jumps based on uninitialised values
 
 	/* if head==NULL, node created is the new head of the list! */
-
 	if (head == NULL) {
 		head = newRow; // make head newRow if it does not exist
 		return head;
-
-	} else { /* otherwise, traverse linked list and add new node in right order */
-		
-		Row *traverseList = head; //  set traverseList as temporary variable with which we can traverse linked list
-		Row *nodeExists = search_address(traverseList, address); // need to check if address node already exists 
-		int i = 0;
-
-		if (nodeExists != NULL) nodeExists -> contents = contents; // update node's contents if the node with specified address already exists 
-		else{  // gets into here only if a node with given address doesn't already exist
-
-			if (address < head -> address) { 
-				newRow -> next = head;
-				head = newRow;
-			}
-
-			nodeExists = traverseList -> next;  // nodeExists will track current node; traverseList will track previous node
-			do {
-				if (traverseList -> next == NULL){ // check if at end of linked list
-					traverseList -> next = newRow; // add newRow to the end of the linked list
-					break;
-				}
-				if (address < nodeExists -> address) { // check to make sure that new nodes are added in ascending order of address
-					traverseList -> next = newRow; // add the newNode before node with address field greater than address
-					newRow -> next = nodeExists; // connect newly-inserted node to next nodes
-					break;
-				} 
-				nodeExists = nodeExists -> next; // continue to increment if address to be added is higher than address at location in list
-				traverseList = traverseList -> next; // keep traversing through linked list until end or until address to be added is lower than address at current
-			} while (1);
-		}
 	}
+
+	/* otherwise, traverse linked list and add new node in right order */	
+	Row *traverseList = head; //  set traverseList as temporary variable with which we can traverse linked list
+	Row *nodeExists = search_address(traverseList, address); // need to check if address node already exists 
+	int i = 0;
+
+	if (nodeExists != NULL) {
+		nodeExists -> contents = contents;  // update node's contents if the node with specified address already exists 
+		free(newRow); // frees newRow if not going to be added to linked list
+		return head;
+	}
+
+	// gets here only if a node with given address doesn't already exist
+	if (address < head -> address) { // if first node's address is > than address of node to be added, add new node at beginning
+		newRow -> next = head; // adds a node newRow to the beginning of the linked list and returns it
+		return newRow;
+	}
+
+	nodeExists = traverseList -> next;  // nodeExists will track current node; traverseList will track previous node
+	do {
+		if (traverseList -> next == NULL){ // check if at end of linked list
+			traverseList -> next = newRow; // add newRow to the end of the linked list
+			break;
+		}
+		if (address < nodeExists -> address) { // check to make sure that new nodes are added in ascending order of address
+			traverseList -> next = newRow; // add the newNode before node with address field greater than address
+			newRow -> next = nodeExists; // connect newly-inserted node to next nodes
+			break;
+		} 
+		nodeExists = nodeExists -> next; // continue to increment if address to be added is higher than address at location in list
+		traverseList = traverseList -> next; // keep traversing through linked list until end or until address to be added is lower than address at current
+	} while (1);
 
 	/* always return pointer to head of linked list */
 	return head ;   
